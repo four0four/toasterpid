@@ -3,7 +3,7 @@ CC=avr-gcc
 OBJCOPY=avr-objcopy
 MMCU=attiny4313
 
-CFLAGS=-mmcu=$(MMCU) -Wall -Os -g
+CFLAGS=-mmcu=$(MMCU) -Wall -Os -g -std=c99
 
 all: main.hex main.lst
 

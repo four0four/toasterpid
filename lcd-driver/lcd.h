@@ -1,6 +1,6 @@
 #ifndef __LCD_H
 #define __LCD_H
-
+#define F_CPU 1000000
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdint.h>
@@ -17,12 +17,23 @@
 
 // control lines
 #define LCD_CTL_PORT PORTD
-#define LCD_E
-#define LCD_RS
+#define LCD_CTL_DDR DDRD
+#define LCD_EN 2
+#define LCD_RS 1
+#define LCD_RW 0
 
 // data lines/bus
 #define LCD_DATA_PORT PORTB
-#define LCD_DATA_MASK 0x0F
+#define LCD_DATA_DDR DDRB
+#define LCD_DATA_PIN PINB
+#define LCD_DATA_1  0
+#define LCD_DATA_2  1
+#define LCD_DATA_3  2
+#define LCD_DATA_4  3
+
+// RS states
+#define RS_CMD 0
+#define RS_DATA 1
 
 // basic LCD commands. for commands with following options, simply bitwise OR the command w/the base
 #define LCD_CLR 0x01 // clear the LCD entirely, cursor pos = 0
@@ -46,9 +57,17 @@
 #define FUNCTION_DISPLAY_LINES 0x08 // set to indicate 2 lines, unset for 1
 #define FUNCTION_FONT 0x04 // set to indicate 5*10 font, unset for 5*8
 
+void strobeEN();
 
-void writeCMD(uint8_t);
+void lcdWrite(uint8_t, uint8_t);
 
-void writeData(uint8_t);
+void lcdWriteNibble(uint8_t, uint8_t);
+
+uint8_t lcdRead(uint8_t);
+
+uint8_t lcdReadNibble(uint8_t);
+
+void lcdWait(); 
+
 
 #endif // __LCD_H
