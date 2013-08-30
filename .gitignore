@@ -15,3 +15,7 @@
 *.exe
 *.out
 *.app
+
+# vim files
+*.swo*
+*.swp*
