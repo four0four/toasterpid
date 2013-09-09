@@ -42,7 +42,7 @@ int16_t getExternalTemp() {
   return (lastRead & THERM_DATA) >> 18;
 }
 
-int16_t getInternetTemp() {
+int16_t getInternalTemp() {
   return (lastRead & THERM_INT_DATA) >> 4;
 }
 
