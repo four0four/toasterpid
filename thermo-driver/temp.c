@@ -1,6 +1,6 @@
 static uint32_t lastRead = 0;
 
-void readThermo() {
+void updateTemp() {
   lastRead = 0;
   // start with SCK low
   AMP_CTL_PORT &= ~(1<<AMP_CLK);

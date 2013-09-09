@@ -22,6 +22,33 @@
 #define THERM_SCG_FAULT 0x2
 #define THERM_OC_FAULT 0x1
 
+/*
+  clears cached temp data, then reads in latest from the amp
+  all following functions require the locally stored data 
+  - do not call this faster than the amplifier can handle
+*/
+void updateTemp();
+
+/* 
+  checks cached data for fault markers, then returns as follows
+  3: SCV - thermocouple shorted to vcc
+  2: SCG - thermocouple shorted to gnd
+  1: OC  - thermocouple is open circuit
+  0: No fault
+*/
+uint8_t getFaults();
+
+/* 
+  returns external thermocouple temperature 
+  masked directly from cached data
+*/
+int16_t getExternalTemp();
+
+/* 
+  returns internal thermocouple temperature
+  masked directly from cached data
+*/
+int16_t getInternalTemp();
 
 
 #endif // __TEMP_H

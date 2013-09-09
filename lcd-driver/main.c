@@ -48,6 +48,5 @@ int main() {
     lcdWait();
   }
 
-
   return 0;
 }
