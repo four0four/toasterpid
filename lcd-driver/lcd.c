@@ -2,9 +2,12 @@
 
 
 void strobeEN() {
-  LCD_CTL_PORT |= (1<<LCD_EN);
-  __asm__ __volatile__("rjmp 1f\n 1:");
   LCD_CTL_PORT &= ~(1<<LCD_EN);
+  _delay_us(1);
+  LCD_CTL_PORT |= (1<<LCD_EN);
+  _delay_us(1);
+  LCD_CTL_PORT &= ~(1<<LCD_EN);
+  _delay_us(100);
 }
 
 void lcdWait() {
@@ -29,6 +32,8 @@ void lcdWriteNibble(uint8_t RS, uint8_t data) {
     LCD_CTL_PORT |= (1<<LCD_RS);
   else
     LCD_CTL_PORT &= ~(1<<LCD_RS);
+  // clear data pins
+  LCD_DATA_PORT &= ~((1<<LCD_DATA_1)|(LCD_DATA_2)|(LCD_DATA_3)|(LCD_DATA_4));
   // write out data
   if(data & 0x01)
     LCD_DATA_PORT |= (1<<LCD_DATA_1);

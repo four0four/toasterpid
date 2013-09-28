@@ -27,9 +27,11 @@ int main() {
   lcdWrite(0, 0x3);
   _delay_ms(5);
   lcdWrite(0, 0x3);
-  _delay_ms(1);
+  _delay_ms(5);
+  lcdWrite(0, 0x3);
+  _delay_ms(5);
   lcdWrite(0, 0x2);
-  _delay_ms(1);
+  _delay_ms(3);
 
   lcdWrite(0,0x28);
   lcdWait();

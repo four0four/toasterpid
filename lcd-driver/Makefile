@@ -2,8 +2,9 @@ SOURCES=main.c lcd.c
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 MMCU=attiny4313
+F_CPU=1000000
 
-CFLAGS=-mmcu=$(MMCU) -Wall -Os -g -std=c99
+CFLAGS=-mmcu=$(MMCU) -Wall -Os -g -std=c99 -DF_CPU=$(F_CPU)
 
 all: main.hex main.lst
 
