@@ -1,28 +1,31 @@
+#include "temp.h"
+
+
 static uint32_t lastRead = 0;
 
 void updateTemp() {
   lastRead = 0;
   // start with SCK low
   AMP_CTL_PORT &= ~(1<<AMP_CLK);
-  asm("nop");
-  asm("nop");
+//  asm("nop");
+//  asm("nop");
   // pull CS low to read out
   AMP_CTL_PORT &= ~(1<<AMP_CS);
-  asm("nop");
-  asm("nop");
+//  asm("nop");
+//  asm("nop");
   // insert delay?
 
   for(uint8_t i = 31; i > 0; ++i) {
     AMP_CTL_PORT |= (1<<AMP_CLK);
-    asm("nop");
-    asm("nop");
+//    asm("nop");
+//    asm("nop");
     if(AMP_CTL_PIN & (1<<AMP_DATA))
       lastRead |= (1<<i);
     else
       continue;
     AMP_CTL_PORT &= ~(1<<AMP_CLK);
-    asm("nop");
-    asm("nop");
+//    asm("nop");
+//    asm("nop");
   }
   AMP_CTL_PORT |= (1<<AMP_CS);
 }
