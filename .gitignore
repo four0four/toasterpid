@@ -19,3 +19,10 @@
 # vim files
 *.swo*
 *.swp*
+
+# avr local crap
+*.hex
+*.out
+*.elf
+*.lst
+*.map
