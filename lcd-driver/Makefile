@@ -14,7 +14,7 @@ CFLAGS=-mmcu=$(MMCU) -Wall -Os -g -std=c99 -DF_CPU=$(F_CPU)
 all: $(PROGRAM).hex $(PROGRAM).lst
 
 $(PROGRAM).hex: $(PROGRAM).out
-	$(OBJCOPY) -j .text -O ihex $(PROGRAM).out $(PROGRAM).hex
+	$(OBJCOPY) -j .text -j .data -O ihex $(PROGRAM).out $(PROGRAM).hex
 	$(SIZE) -C $(PROGRAM).elf --mcu=$(DEVICE)
 
 $(PROGRAM).lst: $(PROGRAM).hex

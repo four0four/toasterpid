@@ -4,10 +4,5 @@
 int main() {
   serialInit();
 
-  serialWrite('!');
-  serialWrite('!');
-  serialWrite('!');
-  serialWrite('!');
-
-  serialString("testy!\n");
+  serialString("testy!\n\r");
 }

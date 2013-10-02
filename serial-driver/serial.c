@@ -15,8 +15,7 @@ void serialWrite(char data) {
 }
 
 void serialString(char *data) {
-  while(*data != 0){
+  serialWrite(*data);
+  while(*(++data))
     serialWrite(*data);
-    data++;
-  }
 }
