@@ -20,7 +20,6 @@ void lcdInit() {
   
   // initial pin conditions
   LCD_CTL_PORT |= (1<<LCD_EN);
-  _delay_ms(20); // additional wait
 
   lcdWrite(0, 0x30);
   _delay_ms(6);
@@ -28,19 +27,19 @@ void lcdInit() {
   _delay_ms(2);
   lcdWrite(0, 0x30);
   _delay_ms(2);
+
   // now in 8-bit mode
-  lcdWrite(0, 0x38); // Function Set
-  _delay_us(100);
-  lcdWrite(0, 0x08); // Start w/lcd off
-  _delay_us(100);
-  lcdWrite(0, 0x01); // Clear ddram/display
-  _delay_ms(5);
-  lcdWrite(0, 0x06); // Entry Mode Set
-  _delay_us(100);
+  lcdWrite(RS_CMD, LCD_FUNCTION | FUNCTION_DATA_WIDTH | FUNCTION_DISPLAY_LINES);  // set up 2 lines, 8 bit bus, 5x8 font
+  lcdWait();
+  lcdWrite(RS_CMD, LCD_POWER); // LCD off (clean reset at least)
+  lcdWait();
+  lcdWrite(RS_CMD, LCD_CLR); // clear display/buffer
+  lcdWait();
+  lcdWrite(RS_CMD, LCD_ENTRY | ENTRY_INCREMENT); // set to increment on write
+  lcdWait();
   // basic init done!
- lcdWrite(0, 0x0C); // turn lcd on
-  _delay_us(100);
-//  lcdWrite(0, 0x80);
+  lcdWrite(RS_CMD, LCD_POWER | DISPLAY_ON | DISPLAY_CURSOR); // turn on LCD w/o cursor
+  lcdWait();
 }
 
 void lcdWrite(uint8_t RS, uint8_t data) {
@@ -73,12 +72,21 @@ uint8_t lcdRead(uint8_t RS) {
     LCD_CTL_PORT &= ~(1<<LCD_RS);
   // set RW (read)
   LCD_CTL_PORT |= (1<<LCD_RW);
-  _delay_ms(3);
   LCD_CTL_PORT |= (1<<LCD_EN);
-  _delay_ms(3);
+  _delay_us(10);
 
   data = LCD_DATA_PIN;
 
   return data;
+}
+
+void lcdWriteChar(uint8_t data) {
+  lcdWrite(RS_DATA, data);
+}
+
+void lcdWriteString(uint8_t *data) {
+  lcdWrite(RS_DATA, *data);
+  while(*(++data))
+    lcdWrite(RS_DATA, *data);
 }
 

@@ -54,9 +54,12 @@ int main() {
   sprintf(str, "Ext. Temp: %d%cC ", getExternalTemp(lastRead),0xDF);
 
   int i = 0;
+  lcdWriteString(str);
+  /*
   while(str[i]) {
     lcdWrite(1, str[i]);
     ++i;
   }
+  */
   return 0; // shut up, gcc 
 }

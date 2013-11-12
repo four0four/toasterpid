@@ -5,28 +5,29 @@
 #include <stdint.h>
 
 // What lcd.h provides: 
-// writeData() and writeCMD() - basic communication functonality
-// writeString() and writeChar() - abstracted write functionality
+// lcdWrite() - basic (read: direct) write functionality
+// lcdRead() - Assuming LCD_RW is used, allows reads from LCD buffers
+// lcdWriteString() and lcdWriteChar() - abstracted write functionality
 // Macros for relevant opcodes
 // Configuration to fit hardware
 
 // All delays are provided using simple timing loops from delay.h - nothing fancy
 
-// Everything assumes 8 bit now
+// Built for 8 bit data bus
 
 // control lines
 #define LCD_CTL_PORT PORTC
 #define LCD_CTL_DDR DDRC
-#define LCD_EN 2
 #define LCD_RS 1
-#define LCD_RW 0
+#define LCD_EN 2
+#define LCD_RW 3
 
 // data lines/bus
 #define LCD_DATA_PORT PORTB
 #define LCD_DATA_DDR DDRB
 #define LCD_DATA_PIN PINB
 
-#define LCD_DATA_MASK 0xFF;
+#define LCD_DATA_MASK 0xFF
 
 // RS states
 #define RS_CMD 0
@@ -40,7 +41,7 @@
 #define ENTRY_INCREMENT 0x02 // set to increment cursor during write
 #define ENTRY_SHIFT 0x01 // set to shift display
 // - LCD power control
-#define LCD_DISPLAY 0x08 // power control base
+#define LCD_POWER 0x08 // power control base
 #define DISPLAY_ON 0x04 // set to power on, clear to power off
 #define DISPLAY_CURSOR 0x02 // set to solid cursor, clear for no cursor (check)
 #define DISPLAY_BLINK_CURSOR 0x01 // set to blink LCD cursor (check as well)
@@ -54,16 +55,27 @@
 #define FUNCTION_DISPLAY_LINES 0x08 // set to indicate 2 lines, unset for 1
 #define FUNCTION_FONT 0x04 // set to indicate 5*10 font, unset for 5*8
 
+// pulls EN high 10 us, LCD should read off the bus during this period
 void strobeEN();
 
-
+// runs basic initialization commands - does not require an lcd power cycle
 void lcdInit();
 
+// writes 8 bits of data to the LCD 
+// pass RS_CMD or RS_DATA as appropriate
 void lcdWrite(uint8_t, uint8_t);
 
+// returns 8 bits of data from the current address
+// pass RS_CMD for RS_DATA to select the buffer referenced
 uint8_t lcdRead(uint8_t);
 
+// blocks while the busy bit is set in the LCD's status register
 void lcdWait(); 
 
+// write a char to the display at the current address (basically just asserts RS_DATA)
+void lcdWriteChar(uint8_t);
 
+// write a string to the display, starting at the current address
+// does not currently wrap nicely!
+void lcdWriteString(uint8_t*);
 #endif // __LCD_H
