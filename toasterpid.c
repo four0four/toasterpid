@@ -21,7 +21,6 @@ int main() {
   serialInit();
   initThermo();
   lcdInit(); 
-  lcdWrite(1, '!');
   serialString("initialization completed\n\r");
 
   _delay_ms(50);
@@ -52,5 +51,12 @@ int main() {
   sprintf(str,"Error code: 0x%02x\n\r",getFaults(lastRead));
   serialString(str);
 
+  sprintf(str, "Ext. Temp: %d%cC ", getExternalTemp(lastRead),0xDF);
+
+  int i = 0;
+  while(str[i]) {
+    lcdWrite(1, str[i]);
+    ++i;
+  }
   return 0; // shut up, gcc 
 }

@@ -7,7 +7,6 @@ void strobeEN() {
   LCD_CTL_PORT |= (1<<LCD_EN);
   _delay_us(10);
   LCD_CTL_PORT &= ~(1<<LCD_EN);
-  _delay_us(100);
 }
 
 void lcdWait() {
@@ -18,14 +17,16 @@ void lcdInit() {
   // initialize data pins for 8 bit use
   LCD_CTL_DDR |= (1<<LCD_EN) | (1<<LCD_RS) | (1<<LCD_RW);
   LCD_DATA_DDR |= LCD_DATA_MASK;
-
+  
+  // initial pin conditions
+  LCD_CTL_PORT |= (1<<LCD_EN);
   _delay_ms(20); // additional wait
 
-  lcdWrite(0, 0x03);
+  lcdWrite(0, 0x30);
   _delay_ms(6);
-  lcdWrite(0, 0x03);
+  lcdWrite(0, 0x30);
   _delay_ms(2);
-  lcdWrite(0, 0x03);
+  lcdWrite(0, 0x30);
   _delay_ms(2);
   // now in 8-bit mode
   lcdWrite(0, 0x38); // Function Set
@@ -37,9 +38,9 @@ void lcdInit() {
   lcdWrite(0, 0x06); // Entry Mode Set
   _delay_us(100);
   // basic init done!
-  lcdWrite(0, 0xC0); // turn lcd on
+ lcdWrite(0, 0x0C); // turn lcd on
   _delay_us(100);
-
+//  lcdWrite(0, 0x80);
 }
 
 void lcdWrite(uint8_t RS, uint8_t data) {
@@ -48,8 +49,6 @@ void lcdWrite(uint8_t RS, uint8_t data) {
   LCD_DATA_DDR |= LCD_DATA_MASK;
   // clear RW (write)
   LCD_CTL_PORT &= ~(1<<LCD_RW);
-  // set EN low for now
-  LCD_CTL_PORT &= ~(1<<LCD_EN);
   // conditional prevents non-1/0 screwups
   if(RS)
     LCD_CTL_PORT |= (1<<LCD_RS);
@@ -59,6 +58,7 @@ void lcdWrite(uint8_t RS, uint8_t data) {
   LCD_DATA_PORT = data;
 
   strobeEN();
+  _delay_us(20);
 }
 
 uint8_t lcdRead(uint8_t RS) {

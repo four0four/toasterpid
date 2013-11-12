@@ -17,15 +17,15 @@ uint32_t readTemp() {
   AMP_CTL_PORT &= ~(1<<AMP_CLK);
   // assert ~CS to read
   AMP_CTL_PORT &= ~(1<<AMP_CS);
-  _delay_us(1);
+  _delay_us(5);
   // read in four bytes off SPI bus
   for(uint8_t i = 32; i>0; --i) {
     AMP_CTL_PORT &= ~(1<<AMP_CLK);
-    _delay_us(1);
+    _delay_us(5);
     if(AMP_CTL_PIN & (1<<AMP_DATA))
       d |= ((1UL)<<(i-1));            
     AMP_CTL_PORT |= (1<<AMP_CLK);
-    _delay_us(1);
+    _delay_us(5);
   }
   // deassert ~CS
   AMP_CTL_PORT |= (1<<AMP_CS);
@@ -45,7 +45,7 @@ int16_t getExternalTemp(uint32_t d) {
   uint8_t neg = (d & 1<<13UL);
   // operate on positive
   if(neg)
-    d = -d; //gcc, please do this right
+    d *= -1; //gcc, please do this right
   // round properly
   if((d & 0x3) > 1){
     d >>= 2;
@@ -54,7 +54,7 @@ int16_t getExternalTemp(uint32_t d) {
   else
     d >>= 2;
 
-  if(neg) d = -d;
+  if(neg) d *= -1;
 
   return d;
 }

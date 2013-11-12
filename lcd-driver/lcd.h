@@ -15,8 +15,8 @@
 // Everything assumes 8 bit now
 
 // control lines
-#define LCD_CTL_PORT PORTD
-#define LCD_CTL_DDR DDRD
+#define LCD_CTL_PORT PORTC
+#define LCD_CTL_DDR DDRC
 #define LCD_EN 2
 #define LCD_RS 1
 #define LCD_RW 0

@@ -6,9 +6,9 @@
 #include <stdint.h>
 
 // thermocouple amp AVR registers
-#define AMP_CTL_PORT PORTB
-#define AMP_CTL_PIN PINB
-#define AMP_CTL_DDR DDRB
+#define AMP_CTL_PORT PORTC
+#define AMP_CTL_PIN PINC
+#define AMP_CTL_DDR DDRC
 
 // thermocouple amp pin connections
 #define AMP_CS 0
