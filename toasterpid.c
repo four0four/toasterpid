@@ -8,51 +8,49 @@
 
 
 int main() {
+  // for debug info via sprintf
   char str[20];
+  // last thermo read
   uint32_t lastRead = 0;
+  // crappy 4-bit spacing counter
+  uint8_t sp = 0;
+  // cludgy startup delay for external hw
+  _delay_ms(100);  
 
+  // init hardware
   serialInit();
   initThermo();
-
+  lcdInit(); 
+  lcdWrite(1, '!');
   serialString("initialization completed\n\r");
-
 
   _delay_ms(50);
 
   serialString("reading...\n\r");
   lastRead = readTemp();
-  /*
-  // pull CS low to read out
-  AMP_CTL_PORT &= ~(1<<AMP_CS);
 
-  lastRead = 0;
-  for(uint8_t i = 31; i>0; --i) {
-    AMP_CTL_PORT &= ~(1<<AMP_CLK);
-    if(AMP_CTL_PIN & (1<<AMP_DATA))
-      lastRead |= (1<<i);
-    _delay_us(5);
-    AMP_CTL_PORT |= (1<<AMP_CLK);
+  // print out raw (bit-level) thermo data
+  for(uint8_t i = 32; i > 0; --i) {
+    if(sp==4){
+      serialWrite(' ');
+      sp = 0;
+    }
+    sp++;
+    if(lastRead & (1UL<<(i-1)))
+      serialWrite('1');
+    else
+      serialWrite('0');
   }
-  AMP_CTL_PORT |= (1<<AMP_CS);
-
   serialWrite('\n');
   serialWrite('\r');
-  */
 
-  uint16_t upper,lower;
-  upper = lastRead >> 16;
-  lower = lastRead & 0xFFFF;
-
-  sprintf(str,"Raw: 0x%x%x\n\r",upper, lower);
-  serialString(str);
-
-  sprintf(str, "Fault Code: 0x%x\n\r", getFaults(lastRead));
-  serialString(str);
   sprintf(str, "Ext. Temp: %d\n\r", getExternalTemp(lastRead));
   serialString(str);
   sprintf(str, "Int. Temp: %d\n\r", getInternalTemp(lastRead));
   serialString(str);
 
+  sprintf(str,"Error code: 0x%02x\n\r",getFaults(lastRead));
+  serialString(str);
 
   return 0; // shut up, gcc 
 }

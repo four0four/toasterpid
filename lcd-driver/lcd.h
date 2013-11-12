@@ -10,9 +10,9 @@
 // Macros for relevant opcodes
 // Configuration to fit hardware
 
-// What lcd.h does not provide: initialization functions
-
 // All delays are provided using simple timing loops from delay.h - nothing fancy
+
+// Everything assumes 8 bit now
 
 // control lines
 #define LCD_CTL_PORT PORTD
@@ -25,10 +25,8 @@
 #define LCD_DATA_PORT PORTB
 #define LCD_DATA_DDR DDRB
 #define LCD_DATA_PIN PINB
-#define LCD_DATA_1  0
-#define LCD_DATA_2  1
-#define LCD_DATA_3  2
-#define LCD_DATA_4  3
+
+#define LCD_DATA_MASK 0xFF;
 
 // RS states
 #define RS_CMD 0
@@ -58,13 +56,12 @@
 
 void strobeEN();
 
+
+void lcdInit();
+
 void lcdWrite(uint8_t, uint8_t);
 
-void lcdWriteNibble(uint8_t, uint8_t);
-
 uint8_t lcdRead(uint8_t);
-
-uint8_t lcdReadNibble(uint8_t);
 
 void lcdWait(); 
 

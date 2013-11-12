@@ -12,18 +12,20 @@ void initThermo() {
 }
 
 uint32_t readTemp() {
-  uint32_t d = 0;
+  uint32_t d = 0UL;
   // start with SCK low
   AMP_CTL_PORT &= ~(1<<AMP_CLK);
   // assert ~CS to read
   AMP_CTL_PORT &= ~(1<<AMP_CS);
+  _delay_us(1);
   // read in four bytes off SPI bus
-  for(uint8_t i = 31; i>0; --i) {
+  for(uint8_t i = 32; i>0; --i) {
     AMP_CTL_PORT &= ~(1<<AMP_CLK);
+    _delay_us(1);
     if(AMP_CTL_PIN & (1<<AMP_DATA))
-      d |= (1<<i);
-    _delay_us(5);
+      d |= ((1UL)<<(i-1));            
     AMP_CTL_PORT |= (1<<AMP_CLK);
+    _delay_us(1);
   }
   // deassert ~CS
   AMP_CTL_PORT |= (1<<AMP_CS);
@@ -39,35 +41,40 @@ uint8_t getFaults(uint32_t d) {
 }
 
 int16_t getExternalTemp(uint32_t d) {
-  //int16_t extTemp = (d & THERM_DATA) >> 18; // cut out raw value
-  //uint8_t neg = (d >> 30) & 0x01; // Save sign bit
-  
-  // TESTME
-  uint16_t extTemp = (int16_t)((d & 0xFFFC0000) >> 20);
-  // verify we need this:
-  if (~extTemp == 0)
-    extTemp = 0;
-  return extTemp;
- /*
-    d = ((d >> 18) & 0x3fff);   // leave only thermocouple value in d
-    if (d & 0x2000)             // if thermocouple reading is negative...
-    {
-        d = -d & 0x3fff;        // always work with positive values
-        neg = 1;             // but note original value was negative
-    }
-    d = d + 2;                  // round up by 0.5 degC (2 LSBs)
-    d = d >> 2;                 // now convert from 0.25 degC units to degC
-    if (neg)  d = -d;           // convert to negative if needed
-    return  d;                  // return as integer
-  */
+  d >>= 18UL;
+  uint8_t neg = (d & 1<<13UL);
+  // operate on positive
+  if(neg)
+    d = -d; //gcc, please do this right
+  // round properly
+  if((d & 0x3) > 1){
+    d >>= 2;
+    d++;
+  }
+  else
+    d >>= 2;
+
+  if(neg) d = -d;
+
+  return d;
 }
 
 int16_t getInternalTemp(uint32_t d) {
-  int16_t intTemp = (int16_t)((d & THERM_INT_DATA) >> 8); // drop from 1/16th precision to 1 deg..
+  d >>= 4;
+  uint8_t neg = (d & (1<<11UL));
 
-  if (~intTemp == 0)
-    intTemp = 0;
+  if(neg)
+    d = -d;
+  if((d & 0xF) > 7){
+    d >>= 4;
+    d++;
+  }
+  else
+    d >>= 4;
 
-  return intTemp;
+  if(neg)
+    d = -d;
+
+  return d;
 }
 
