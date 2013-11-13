@@ -73,9 +73,9 @@ uint8_t lcdRead(uint8_t);
 void lcdWait(); 
 
 // write a char to the display at the current address (basically just asserts RS_DATA)
-void lcdWriteChar(uint8_t);
+void lcdWriteChar(char);
 
 // write a string to the display, starting at the current address
 // does not currently wrap nicely!
-void lcdWriteString(uint8_t*);
+void lcdWriteString(char*);
 #endif // __LCD_H

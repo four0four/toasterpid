@@ -7,6 +7,7 @@
 #include "lcd.h"
 
 
+
 int main() {
   // for debug info via sprintf
   char str[20];
@@ -21,14 +22,14 @@ int main() {
   serialInit();
   initThermo();
   lcdInit(); 
-  serialString("initialization completed\n\r");
-
   _delay_ms(50);
-
+   
+  serialString("initialization completed\n\r");
   serialString("reading...\n\r");
+
   lastRead = readTemp();
 
-  // print out raw (bit-level) thermo data
+  // print out raw (bit-level) thermo data (DEBUG)
   for(uint8_t i = 32; i > 0; --i) {
     if(sp==4){
       serialWrite(' ');
@@ -43,23 +44,17 @@ int main() {
   serialWrite('\n');
   serialWrite('\r');
 
-  sprintf(str, "Ext. Temp: %d\n\r", getExternalTemp(lastRead));
-  serialString(str);
-  sprintf(str, "Int. Temp: %d\n\r", getInternalTemp(lastRead));
-  serialString(str);
 
-  sprintf(str,"Error code: 0x%02x\n\r",getFaults(lastRead));
-  serialString(str);
+  sprintf(str, "External Temp:\n%d%cC ", getExternalTemp(lastRead),0xDF);
 
-  sprintf(str, "Ext. Temp: %d%cC ", getExternalTemp(lastRead),0xDF);
+  if(getFaults(lastRead) == THERM_SCV_FAULT)
+    lcdWriteString("Short to VCC (4)");
+  else if(getFaults(lastRead) == THERM_SCG_FAULT)
+    lcdWriteString("Short to GND (2)");
+  else if(getFaults(lastRead) == THERM_OC_FAULT)
+    lcdWriteString("Open probe (1)");
+  else
+    lcdWriteString(str);
 
-  int i = 0;
-  lcdWriteString(str);
-  /*
-  while(str[i]) {
-    lcdWrite(1, str[i]);
-    ++i;
-  }
-  */
   return 0; // shut up, gcc 
 }

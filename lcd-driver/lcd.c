@@ -1,6 +1,5 @@
 #include "lcd.h"
 
-
 void strobeEN() {
   LCD_CTL_PORT &= ~(1<<LCD_EN);
   _delay_us(10);
@@ -80,13 +79,35 @@ uint8_t lcdRead(uint8_t RS) {
   return data;
 }
 
-void lcdWriteChar(uint8_t data) {
+void lcdWriteChar(char data) {
   lcdWrite(RS_DATA, data);
 }
 
-void lcdWriteString(uint8_t *data) {
-  lcdWrite(RS_DATA, *data);
-  while(*(++data))
+void lcdWriteString(char *data) {
+  uint8_t sAddr = lcdRead(RS_CMD) & 0x7F;
+  uint8_t pos = sAddr;
+
+  for(pos; pos < 16; ++pos) {
     lcdWrite(RS_DATA, *data);
+    ++data;
+    if((!*data) | (*data == '\n')) 
+      break;
+  }
+  if(*data) {
+    // newline?
+    if(*data == '\n')
+      ++data;
+
+    // work on line two
+    lcdWrite(RS_CMD, 0xC0); // DDRAM address to line 2, pos 0
+    lcdWait();
+    pos = 0;
+    for(pos; pos < 16; ++pos) {
+      lcdWrite(RS_DATA, *data);
+      ++data;
+      if((!*data) | (*data == '\n'))
+        break;
+    }
+  }
 }
 
