@@ -111,3 +111,14 @@ void lcdWriteString(char *data) {
   }
 }
 
+void lcdWriteLine(uint8_t line, uint8_t pos, char *data) {
+  if(line == 0)
+    lcdWrite(RS_CMD, 0x80 + pos);
+  else
+    lcdWrite(RS_CMD, 0xC0 + pos);
+  while((*data) && (pos < 16)) {
+    lcdWrite(RS_DATA, *data);
+    ++pos;
+    ++data;
+  }
+}

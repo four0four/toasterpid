@@ -78,4 +78,13 @@ void lcdWriteChar(char);
 // write a string to the display, starting at the current address
 // does not currently wrap nicely!
 void lcdWriteString(char*);
+
+// Much more useful functions for menu driven UI
+// line: 0 or 1
+// pos: 0-15
+// data: null-terminated string to be written
+// - any length > 16 will be heartlessly truncated
+void lcdWriteLine(uint8_t, uint8_t, char*);
+
+
 #endif // __LCD_H
