@@ -85,9 +85,9 @@ void lcdWriteChar(char data) {
 
 void lcdWriteString(char *data) {
   uint8_t sAddr = lcdRead(RS_CMD) & 0x7F;
-  uint8_t pos = sAddr;
+  uint8_t pos;
 
-  for(pos; pos < 16; ++pos) {
+  for(pos = sAddr; pos < 16; ++pos) {
     lcdWrite(RS_DATA, *data);
     ++data;
     if((!*data) | (*data == '\n')) 
@@ -101,8 +101,7 @@ void lcdWriteString(char *data) {
     // work on line two
     lcdWrite(RS_CMD, 0xC0); // DDRAM address to line 2, pos 0
     lcdWait();
-    pos = 0;
-    for(pos; pos < 16; ++pos) {
+    for(pos = 0; pos < 16; ++pos) {
       lcdWrite(RS_DATA, *data);
       ++data;
       if((!*data) | (*data == '\n'))

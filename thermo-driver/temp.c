@@ -21,11 +21,11 @@ uint32_t readTemp() {
   // read in four bytes off SPI bus
   for(uint8_t i = 32; i>0; --i) {
     AMP_CTL_PORT &= ~(1<<AMP_CLK);
-    _delay_us(5);
+    _delay_us(15);
     if(AMP_CTL_PIN & (1<<AMP_DATA))
       d |= ((1UL)<<(i-1));            
     AMP_CTL_PORT |= (1<<AMP_CLK);
-    _delay_us(5);
+    _delay_us(10);
   }
   // deassert ~CS
   AMP_CTL_PORT |= (1<<AMP_CS);
@@ -41,7 +41,24 @@ uint8_t getFaults(uint32_t d) {
 }
 
 int16_t getExternalTemp(uint32_t d) {
-  d >>= 18UL;
+  uint8_t neg = 0;
+  int16_t t = d >> 18UL;
+
+  if(t & (1<<13)) {
+    neg = 1;
+    --t;
+    t = ~t;
+    serialString("Found negative temp\n\r");
+  }
+
+  t += 2; // Rounds >= 0.5 up
+  t >>= 2; // drop 0.25 and 0.5 bits
+
+  if(neg)
+    t = -1 * t;
+
+  return t;
+  /*d >>= 18UL;
   uint8_t neg = (d & 1<<13UL);
   // operate on positive
   if(neg)
@@ -54,9 +71,10 @@ int16_t getExternalTemp(uint32_t d) {
   else
     d >>= 2;
 
-  if(neg) d *= -1;
+  if(neg) d *= -1;  */
 
-  return d;
+
+//  return d >> 18;
 }
 
 int16_t getInternalTemp(uint32_t d) {
