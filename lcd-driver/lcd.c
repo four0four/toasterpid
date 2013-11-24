@@ -2,10 +2,10 @@
 
 void strobeEN() {
   LCD_CTL_PORT &= ~(1<<LCD_EN);
-  _delay_us(10);
   LCD_CTL_PORT |= (1<<LCD_EN);
-  _delay_us(10);
+  _delay_us(5);
   LCD_CTL_PORT &= ~(1<<LCD_EN);
+  //_delay_us(35);
 }
 
 void lcdWait() {
@@ -56,7 +56,7 @@ void lcdWrite(uint8_t RS, uint8_t data) {
   LCD_DATA_PORT = data;
 
   strobeEN();
-  _delay_us(20);
+  lcdWait();
 }
 
 uint8_t lcdRead(uint8_t RS) {
