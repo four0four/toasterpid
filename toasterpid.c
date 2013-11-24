@@ -27,6 +27,7 @@ int main() {
   serialString("initialization completed\n\r");
   serialString("reading...\n\r");
 
+  lcdWrite(RS_CMD, LCD_CLR);
   lastRead = readTemp();
 
   // print out raw (bit-level) thermo data (DEBUG)
@@ -44,17 +45,21 @@ int main() {
   serialWrite('\n');
   serialWrite('\r');
 
-
   sprintf(str, "External Temp:\n%d%cC ", getExternalTemp(lastRead),0xDF);
+  lcdWriteString(str);
 
-  if(getFaults(lastRead) == THERM_SCV_FAULT)
-    lcdWriteString("Short to VCC (4)");
-  else if(getFaults(lastRead) == THERM_SCG_FAULT)
-    lcdWriteString("Short to GND (2)");
-  else if(getFaults(lastRead) == THERM_OC_FAULT)
-    lcdWriteString("Open probe (1)");
-  else
-    lcdWriteString(str);
-
+  while(1) {
+    _delay_ms(250);
+    lastRead = readTemp();
+    sprintf(str, "%d%cC            ", getExternalTemp(lastRead),0xDF);
+    if(getFaults(lastRead) == THERM_SCV_FAULT)
+      lcdWriteLine(1, 0, "Short to VCC (4)");
+    else if(getFaults(lastRead) == THERM_SCG_FAULT)
+      lcdWriteLine(1, 0, "Short to GND (2)");
+    else if(getFaults(lastRead) == THERM_OC_FAULT)
+      lcdWriteLine(1, 0, "Open probe (1)");
+    else
+      lcdWriteLine(1, 0, str);
+  }
   return 0; // shut up, gcc 
 }
