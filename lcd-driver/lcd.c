@@ -3,9 +3,10 @@
 void strobeEN() {
   LCD_CTL_PORT &= ~(1<<LCD_EN);
   LCD_CTL_PORT |= (1<<LCD_EN);
-  _delay_us(5);
+  // One of the following *may* be required:
+  //  _delay_us(1);
+  //__asm__("nop");
   LCD_CTL_PORT &= ~(1<<LCD_EN);
-  //_delay_us(35);
 }
 
 void lcdWait() {
