@@ -8,9 +8,7 @@ Firmware for my reflow oven PID controller (Heavily WIP!)
 + LCD driver
 
 ## Work in progress:
-+ Thermocouple output handling (negative temps, errors)
-+ LCD EN line ringing?
- + Test on not-breadboard 1st
++ PID algorithm/tuning
 
 ## Entirely untouched:
 + PID algorithm
