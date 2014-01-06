@@ -20,9 +20,17 @@
 #define IDLE 1
 #define REFLOWING 2
 #define COOLING 3
-
+// PID gains
+#define IGAIN 10
+#define DGAIN 0
+#define PGAIN 8
+// integrator boundes
+#define IMAX 200
+#define IMIN -200
 // name length per profile
 // #define _NAME_LEN 8
+
+
 // debug options
 //#define _REALTIME
 #define _CSV
@@ -49,14 +57,22 @@ volatile uint8_t div50count = 0;
 // 1hz counter
 volatile uint8_t div100count = 0;
 // current PID results
-volatile uint8_t curPID = 127;
+volatile uint8_t curPID = 0;
 // current time (used to compute desired temp)
 volatile uint16_t curTime = 0;
 
+
+// TODO move most of these into proper scopes
+// last error term 
+int8_t lastError = 0;
+// last integral term
+int16_t lastIntegral = 0;
 // current reflow oven state
 uint8_t curState = IDLE;
 // current step, saves time in getTemp(), may be useful elsewhere
 uint8_t curStep = 0;
+// current temperature read in from thermo
+int16_t curTemp = 25;
 // current target temperature, stored in 1/512 deg. no signs.
 uint32_t curTarget = 25 * 512; 
 
@@ -77,8 +93,6 @@ int main() {
   char str[20];
   // last thermo read
   uint32_t lastRead = 0;
-  // calculated temp
-  int16_t curTemp = 25;
   // cludgy startup delay for external hw
   _delay_ms(100);  
   // temp. heartbeat
@@ -135,7 +149,7 @@ int main() {
       serialString(str);
 #endif
 #ifdef _CSV
-      sprintf(str,"%u, %d, %u \n\r", curTime, curTemp, (uint16_t)(curTarget>>9));
+      sprintf(str,"%u, %d, %u, %u \n\r", curTime, curTemp, (uint16_t)(curTarget>>9), curPID);
       serialString(str);
 #endif
     }
@@ -196,8 +210,26 @@ void saveProfile() {
 }
 
 uint8_t getPID(int16_t in) {
-  // TODO this  
-  return 127;
+  uint8_t error = ((curTarget>>9) - curTemp);
+  int32_t pterm = PGAIN * error;
+  int32_t iterm = 0;
+  int32_t dterm = (error - lastError) * DGAIN;
+
+  lastError = error;
+
+  if(lastIntegral + error > IMAX) iterm = IGAIN * IMAX;
+  if(lastIntegral + error < IMIN) iterm = IGAIN * IMIN;
+  else iterm = IGAIN * (lastIntegral + error);
+  
+  iterm += pterm + dterm;
+
+
+  if(iterm >= 255)
+    return 255;
+  if(iterm <= 0)
+    return 0;
+  else
+    return iterm;
 }
 
 ISR(TIMER1_COMPA_vect) {
