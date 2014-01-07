@@ -38,7 +38,7 @@ void lcdInit() {
   lcdWrite(RS_CMD, LCD_ENTRY | ENTRY_INCREMENT); // set to increment on write
   lcdWait();
   // basic init done!
-  lcdWrite(RS_CMD, LCD_POWER | DISPLAY_ON | DISPLAY_CURSOR); // turn on LCD w/o cursor
+  lcdWrite(RS_CMD, LCD_POWER | DISPLAY_ON); // turn on LCD w/o cursor
   lcdWait();
 }
 
