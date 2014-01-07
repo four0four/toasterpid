@@ -13,6 +13,14 @@
 #define _2HZ 0x40
 // maximum number of steps per profile 
 #define _MAX_STEPS 8
+// cool-enough-to-handle (deg C)
+#define _DONE_TEMP 30
+// machine states
+#define ERROR 0
+#define IDLE 1
+#define REFLOWING 2
+#define COOLING 3
+
 // name length per profile
 // #define _NAME_LEN 8
 // debug options
@@ -26,7 +34,7 @@ uint8_t loadProfile();
 // save (currently the only) profile to EEPROM
 void saveProfile();
 // Interpolate stored profile values
-uint16_t getTemp(uint16_t time);
+void updateTarget();
 // return 0-255 from PID algo
 uint8_t getPID(int16_t in);
 
@@ -45,17 +53,18 @@ volatile uint8_t curPID = 127;
 // current time (used to compute desired temp)
 volatile uint16_t curTime = 0;
 
-
+// current reflow oven state
+uint8_t curState = IDLE;
 // current step, saves time in getTemp(), may be useful elsewhere
 uint8_t curStep = 0;
-// current slope (saves on continuous interpolation)
-float curSlope = 0;
+// current target temperature, stored in 1/512 deg. no signs.
+uint32_t curTarget = 25 * 512; 
 
 // struct for profile data
-typedef struct prof {
+typedef struct {
   uint8_t numSteps; // can be < _MAX_STEPS for a given profile, rest are not stored in EEPROM
-  int16_t tempStep[_MAX_STEPS]; // temperature at a given step
-  uint16_t timeStep[_MAX_STEPS]; // time for a given temp step
+  uint16_t stepTime[_MAX_STEPS]; // total time to spend at a given step/rate
+  int16_t stepRate[_MAX_STEPS]; // dTemp for a given step, 1/512 deg/sec (>>9)
 #ifdef _NAME_LEN
   uint8_t name[_NAME_LEN];
 #endif
@@ -98,8 +107,9 @@ int main() {
       flags &= ~_10HZ;
       lastRead = readTemp();
       curTemp = getExternalTemp(lastRead);
+      updateTarget();
       curPID = getPID(curTemp);
-      sprintf(str, "      %d%cC      ", curTemp,0xDF);
+      sprintf(str, "      %d%cC", curTemp,0xDF);
       if(getFaults(lastRead) == THERM_SCV_FAULT)
         lcdWriteLine(1, 0, "Short to VCC (4)");
       else if(getFaults(lastRead) == THERM_SCG_FAULT)
@@ -111,6 +121,12 @@ int main() {
     }
     if(flags & _2HZ){
       flags &= ~_2HZ;
+      if((curState == COOLING) && (curTemp <= _DONE_TEMP)){
+        curState = IDLE;
+        lcdWrite(RS_CMD, LCD_CLR); // clear display/buffer
+        lcdWriteLine(0, 6, "Done");
+        cli();
+      }
 #ifdef _REALTIME
       // packet start token
       serialWrite(0xAB);
@@ -119,9 +135,7 @@ int main() {
       serialString(str);
 #endif
 #ifdef _CSV
-      sprintf(str,"%u, %d, %u \n\r", curTime, curTemp, getTemp(curTime));
-      serialString(str);
-//      sprintf(str, "cur slope = %f\n\r", curSlope);
+      sprintf(str,"%u, %d, %u \n\r", curTime, curTemp, (uint16_t)(curTarget>>9));
       serialString(str);
 #endif
     }
@@ -138,20 +152,21 @@ void timerInit() {
   TCCR1B |= (1<<CS11) | (1<<CS10); // div by 64
 }
 
-uint16_t getTemp(uint16_t time) {
-  // TODO this
-  if(curStep == 0){
-    curSlope = (curProfile.tempStep[curStep+1] - curProfile.tempStep[curStep]);
-    curSlope /= (curProfile.timeStep[curStep+1] - curProfile.timeStep[curStep]);
-  }
-  if((curTime >= curProfile.timeStep[curStep+1]) && (curStep < curProfile.numSteps)) {
-    curStep++;
-    // compute slope between current and next steps
-    curSlope = (curProfile.tempStep[curStep+1] - curProfile.tempStep[curStep]);
-    curSlope /= (curProfile.timeStep[curStep+1] - curProfile.timeStep[curStep]);
+void updateTarget() {
+  
+  if(curTime > curProfile.stepTime[curStep]){
+    ++curStep;
+    if(curStep >= curProfile.numSteps){
+      curState = COOLING;
+      lcdWrite(RS_CMD, LCD_CLR); // clear display/buffer
+      lcdWriteLine(0, 4, "Cooling:");
+      // This will just force the elements off, fine for now
+      curTarget = 25 * 512;
+      return;
+    }
   }
 
-  return (curSlope * (time - curProfile.timeStep[curStep])) + curProfile.tempStep[curStep];
+  curTarget += curProfile.stepRate[curStep];
 }
 
 uint8_t loadProfile() {
@@ -160,22 +175,17 @@ uint8_t loadProfile() {
   // TODO - Expand to multiple profiles
   // TODO - Allow for LCD+button profile selection/browsing
   // TODO get profile from EEPROM and stick it into global struct
-  
-  curProfile.numSteps = 7;
-  curProfile.tempStep[0] = 25;
-  curProfile.timeStep[0] = 0;
-  curProfile.tempStep[1] = 120;
-  curProfile.timeStep[1] = 60;
-  curProfile.tempStep[2] = 150;
-  curProfile.timeStep[2] = 120;
-  curProfile.tempStep[3] = 185;
-  curProfile.timeStep[3] = 180;
-  curProfile.tempStep[4] = 220;
-  curProfile.timeStep[4] = 210;
-  curProfile.tempStep[5] = 180;
-  curProfile.timeStep[5] = 235;
-  curProfile.tempStep[6] = 25;
-  curProfile.timeStep[6] = 400;
+  // Option: Store profile in target points + elapsed time format,
+  //  then convert to internal format here.
+  curProfile.numSteps = 4;
+  curProfile.stepRate[0] = 1.3 * 512 / 10 ;
+  curProfile.stepTime[0] = 90;
+  curProfile.stepRate[1] = 0.5 * 512 / 10;
+  curProfile.stepTime[1] = 180;
+  curProfile.stepRate[2] = 1.3 * 512 / 10;
+  curProfile.stepTime[2] = 210;
+  curProfile.stepRate[3] = -1.5 * 512 / 10;
+  curProfile.stepTime[3] = 240;
   
   return 0;
 }
