@@ -21,9 +21,9 @@
 #define REFLOWING 2
 #define COOLING 3
 // PID gains
-#define IGAIN 10
+#define IGAIN 150
 #define DGAIN 0
-#define PGAIN 8
+#define PGAIN 80
 // integrator boundes
 #define IMAX 200
 #define IMIN -200
@@ -74,13 +74,14 @@ uint8_t curStep = 0;
 // current temperature read in from thermo
 int16_t curTemp = 25;
 // current target temperature, stored in 1/512 deg. no signs.
-uint32_t curTarget = 25 * 512; 
+uint32_t curTarget = 50 * 512; 
 
 // struct for profile data
 typedef struct {
   uint8_t numSteps; // can be < _MAX_STEPS for a given profile, rest are not stored in EEPROM
   uint16_t stepTime[_MAX_STEPS]; // total time to spend at a given step/rate
   int16_t stepRate[_MAX_STEPS]; // dTemp for a given step, 1/512 deg/sec (>>9)
+  uint8_t ceil[_MAX_STEPS]; // TODO REMOVE ME
 #ifdef _NAME_LEN
   uint8_t name[_NAME_LEN];
 #endif
@@ -105,7 +106,7 @@ int main() {
   timerInit();
    
   serialString("initialization completed.\n\r");
-  serialString("[time], [temp], [target]\n\r");
+  serialString("[time], [temp], [target], [pidval]\n\r");
 
   lcdWrite(RS_CMD, LCD_CLR);
   lastRead = readTemp();
@@ -115,6 +116,7 @@ int main() {
 
   // good to go:
   sei();
+  curState = REFLOWING;
 
   while(1) {
     if(flags & _10HZ){
@@ -161,7 +163,8 @@ void timerInit() {
   // 100 Hz interrupt
 
   TCCR1B |= (1<<WGM12); // enable CTC
-  OCR1A = 1249; // 100Hz at 8MHz, /64
+  // 1875 for 12MHz
+  OCR1A = 1249; // 100Hz at 8MHz, /64 
   TIMSK1 |= (1<<OCIE1A); // enable timer1 triggered interrupts
   TCCR1B |= (1<<CS11) | (1<<CS10); // div by 64
 }
@@ -180,7 +183,8 @@ void updateTarget() {
     }
   }
 
-  curTarget += curProfile.stepRate[curStep];
+  if((curState == REFLOWING) && ((curTarget>>9) < curProfile.ceil[curStep]))
+    curTarget += curProfile.stepRate[curStep];
 }
 
 uint8_t loadProfile() {
@@ -191,15 +195,20 @@ uint8_t loadProfile() {
   // TODO get profile from EEPROM and stick it into global struct
   // Option: Store profile in target points + elapsed time format,
   //  then convert to internal format here.
+  // ceilings added as a temporary ward against clock skew (interal RC osc)
   curProfile.numSteps = 4;
   curProfile.stepRate[0] = 1.3 * 512 / 10 ;
   curProfile.stepTime[0] = 90;
+  curProfile.ceil[0] = 117;
   curProfile.stepRate[1] = 0.5 * 512 / 10;
   curProfile.stepTime[1] = 180;
-  curProfile.stepRate[2] = 1.3 * 512 / 10;
+  curProfile.ceil[1] = 162;
+  curProfile.stepRate[2] = 1.5 * 512 / 10;
   curProfile.stepTime[2] = 210;
+  curProfile.ceil[2] = 207;
   curProfile.stepRate[3] = -1.5 * 512 / 10;
   curProfile.stepTime[3] = 240;
+  curProfile.ceil[3] = 255; // clumsy hack for a clumsy hack.
   
   return 0;
 }
@@ -210,7 +219,7 @@ void saveProfile() {
 }
 
 uint8_t getPID(int16_t in) {
-  uint8_t error = ((curTarget>>9) - curTemp);
+  int16_t error = ((curTarget>>9) - curTemp);
   int32_t pterm = PGAIN * error;
   int32_t iterm = 0;
   int32_t dterm = (error - lastError) * DGAIN;
@@ -235,7 +244,7 @@ uint8_t getPID(int16_t in) {
 ISR(TIMER1_COMPA_vect) {
   // update SSR state
   ++ssrCnt;
-  if(ssrCnt <= curPID)
+  if((ssrCnt <= curPID) && curState == REFLOWING)
     PORTD |= (1<<6);
   else
     PORTD &= ~(1<<6);
