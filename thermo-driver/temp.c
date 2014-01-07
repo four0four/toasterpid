@@ -78,21 +78,12 @@ int16_t getExternalTemp(uint32_t d) {
 }
 
 int16_t getInternalTemp(uint32_t d) {
-  d >>= 4;
-  uint8_t neg = (d & (1<<11UL));
+  int16_t t = d >> 4;
 
-  if(neg)
-    d = -d;
-  if((d & 0xF) > 7){
-    d >>= 4;
-    d++;
-  }
-  else
-    d >>= 4;
-
-  if(neg)
-    d = -d;
-
+  if(t & (1<<11))
+    return 0;
+  t += 4; 
+  t = t >> 4;
   return d;
 }
 
