@@ -4,8 +4,9 @@ CC=avr-gcc
 OBJCOPY=avr-objcopy
 SIZE=avr-size
 AVRDUDE=avrdude
-MMCU=attiny4313
-F_CPU=1000000
+MMCU=atmega168a
+DEVICE=atmega168
+F_CPU=8000000
 
 PROGFLAGS= -p$(DEVICE) -c avrisp2 -p usb -U flash:w:$(PROGRAM).hex:i
 
@@ -15,7 +16,7 @@ all: $(PROGRAM).hex $(PROGRAM).lst
 
 $(PROGRAM).hex: $(PROGRAM).out
 	$(OBJCOPY) -j .text -j .data -O ihex $(PROGRAM).out $(PROGRAM).hex
-	$(SIZE) -C $(PROGRAM).elf --mcu=$(DEVICE)
+	$(SIZE) -C $(PROGRAM).out --mcu=$(DEVICE)
 
 $(PROGRAM).lst: $(PROGRAM).hex
 	avr-objdump -h -S $(PROGRAM).out > $(PROGRAM).lst
