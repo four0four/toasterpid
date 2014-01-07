@@ -26,7 +26,8 @@ $(PROGRAM).out: $(SOURCES)
 	$(CC) $(CFLAGS) -o $(PROGRAM).out $(SOURCES) -I$(INCLUDE)
 
 flash: $(PROGRAM).hex
-	$(AVRDUDE) -p $(DEVICE) -c avrisp2 -P usb -B 1 parms
+	#$(AVRDUDE) -p $(DEVICE) -c avrisp2 -P usb -B 1 parms
+	$(AVRDUDE) -p $(DEVICE) -c avrisp2 -B 1 parms
 	$(AVRDUDE) $(PROGFLAGS)
 
 clean:

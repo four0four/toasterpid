@@ -48,7 +48,6 @@ int16_t getExternalTemp(uint32_t d) {
     neg = 1;
     --t;
     t = ~t;
-    serialString("Found negative temp\n\r");
   }
 
   t += 2; // Rounds >= 0.5 up
@@ -56,7 +55,6 @@ int16_t getExternalTemp(uint32_t d) {
 
   if(neg)
     t = -1 * t;
-
   return t;
   /*d >>= 18UL;
   uint8_t neg = (d & 1<<13UL);

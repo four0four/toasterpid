@@ -3,7 +3,7 @@
 void strobeEN() {
   LCD_CTL_PORT &= ~(1<<LCD_EN);
   LCD_CTL_PORT |= (1<<LCD_EN);
-  // One of the following *may* be required:
+  // One of the following *may* be required at faster clocks:
   //  _delay_us(1);
   //__asm__("nop");
   LCD_CTL_PORT &= ~(1<<LCD_EN);
@@ -38,7 +38,7 @@ void lcdInit() {
   lcdWrite(RS_CMD, LCD_ENTRY | ENTRY_INCREMENT); // set to increment on write
   lcdWait();
   // basic init done!
-  lcdWrite(RS_CMD, LCD_POWER | DISPLAY_ON | DISPLAY_CURSOR); // turn on LCD w/o cursor
+  lcdWrite(RS_CMD, LCD_POWER | DISPLAY_ON); // turn on LCD w/o cursor
   lcdWait();
 }
 
@@ -65,7 +65,7 @@ uint8_t lcdRead(uint8_t RS) {
   LCD_CTL_DDR |= ((1<<LCD_EN)|(1<<LCD_RS)|(1<<LCD_RW));
   LCD_DATA_DDR &= ~LCD_DATA_MASK;
   LCD_CTL_PORT &= ~(1<<LCD_EN);
-  // conditional prevents non-1/0 screwups
+ // set appropriate RS bit 
   if(RS)
     LCD_CTL_PORT |= (1<<LCD_RS);
   else
@@ -73,7 +73,7 @@ uint8_t lcdRead(uint8_t RS) {
   // set RW (read)
   LCD_CTL_PORT |= (1<<LCD_RW);
   LCD_CTL_PORT |= (1<<LCD_EN);
-  _delay_us(10);
+ __asm__("nop");
 
   data = LCD_DATA_PIN;
 
