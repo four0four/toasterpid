@@ -1,5 +1,5 @@
 PROGRAM=main
-SOURCES=main.c lcd.c
+SOURCES=main.c lcd4bit.c
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 SIZE=avr-size
@@ -8,7 +8,7 @@ MMCU=atmega168a
 DEVICE=atmega168
 F_CPU=8000000
 
-PROGFLAGS= -p$(DEVICE) -c avrisp2 -p usb -U flash:w:$(PROGRAM).hex:i
+PROGFLAGS= -p$(DEVICE) -c avrisp2 -P usb -U flash:w:$(PROGRAM).hex:i
 
 CFLAGS=-mmcu=$(MMCU) -Wall -Os -g -std=c99 -DF_CPU=$(F_CPU)
 
