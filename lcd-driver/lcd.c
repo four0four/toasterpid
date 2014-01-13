@@ -103,10 +103,10 @@ void lcdWriteString(char *data) {
     lcdWrite(RS_CMD, 0xC0); // DDRAM address to line 2, pos 0
     lcdWait();
     for(pos = 0; pos < 16; ++pos) {
-      lcdWrite(RS_DATA, *data);
-      ++data;
       if((!*data) | (*data == '\n'))
         break;
+      lcdWrite(RS_DATA, *data);
+      ++data;
     }
   }
 }
