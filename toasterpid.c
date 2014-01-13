@@ -5,7 +5,7 @@
 
 #include "serial.h"
 #include "temp.h"
-#include "lcd.h"
+#include "lcd4bit.h"
 
 // 10Hz flag for LCD/thermo/PID
 #define _10HZ 0x80
