@@ -61,6 +61,9 @@ void strobeEN();
 // runs basic initialization commands - does not require an lcd power cycle
 void lcdInit();
 
+// really minimal function - not really restricted to a nibble
+void lcdWriteNibble(uint8_t);
+
 // writes 8 bits of data to the LCD 
 // pass RS_CMD or RS_DATA as appropriate
 void lcdWrite(uint8_t, uint8_t);
