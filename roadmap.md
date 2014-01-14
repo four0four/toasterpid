@@ -11,5 +11,5 @@
 ## TODO
   + Change order of args in some lcd functions?
   + Discard junk thermocouple reads (<0, 4096, etc)
-  + Write PID algorithm
-  + Tune PID algorithm
+  + Test insulation up to ~250C
+    + If that works, pad oven w/insulation, test profiles again
