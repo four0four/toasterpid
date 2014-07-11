@@ -8535,23 +8535,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <label x="-99.06" y="-152.4" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="LCD1" gate="G$1" pin="D4"/>
-<wire x1="-104.14" y1="-177.8" x2="-101.6" y2="-177.8" width="0.1524" layer="91"/>
-<wire x1="-101.6" y1="-177.8" x2="-101.6" y2="-180.34" width="0.1524" layer="91"/>
-<pinref part="LCD1" gate="G$1" pin="D5"/>
-<wire x1="-101.6" y1="-180.34" x2="-104.14" y2="-180.34" width="0.1524" layer="91"/>
-<wire x1="-101.6" y1="-180.34" x2="-101.6" y2="-182.88" width="0.1524" layer="91"/>
-<junction x="-101.6" y="-180.34"/>
-<pinref part="LCD1" gate="G$1" pin="D6"/>
-<wire x1="-101.6" y1="-182.88" x2="-104.14" y2="-182.88" width="0.1524" layer="91"/>
-<wire x1="-101.6" y1="-182.88" x2="-101.6" y2="-185.42" width="0.1524" layer="91"/>
-<junction x="-101.6" y="-182.88"/>
-<pinref part="LCD1" gate="G$1" pin="D7"/>
-<wire x1="-101.6" y1="-185.42" x2="-104.14" y2="-185.42" width="0.1524" layer="91"/>
-<wire x1="-101.6" y1="-180.34" x2="-93.98" y2="-180.34" width="0.1524" layer="91"/>
-<label x="-99.06" y="-180.34" size="1.778" layer="95"/>
-</segment>
-<segment>
 <pinref part="LCD1" gate="G$1" pin="K"/>
 <wire x1="-104.14" y1="-190.5" x2="-93.98" y2="-190.5" width="0.1524" layer="91"/>
 <label x="-99.06" y="-190.5" size="1.778" layer="95"/>
@@ -8683,6 +8666,26 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="127" y1="27.94" x2="119.38" y2="27.94" width="0.1524" layer="91"/>
 <label x="119.38" y="25.4" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D0"/>
+<wire x1="-104.14" y1="-167.64" x2="-93.98" y2="-167.64" width="0.1524" layer="91"/>
+<label x="-99.06" y="-167.64" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D1"/>
+<wire x1="-104.14" y1="-170.18" x2="-93.98" y2="-170.18" width="0.1524" layer="91"/>
+<label x="-99.06" y="-170.18" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D2"/>
+<wire x1="-104.14" y1="-172.72" x2="-93.98" y2="-172.72" width="0.1524" layer="91"/>
+<label x="-99.06" y="-172.72" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D3"/>
+<wire x1="-104.14" y1="-175.26" x2="-93.98" y2="-175.26" width="0.1524" layer="91"/>
+<label x="-99.06" y="-175.26" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="+5V" class="0">
 <segment>
@@ -8752,54 +8755,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="U1" gate="A" pin="PC4"/>
 <wire x1="38.1" y1="-71.12" x2="45.72" y2="-71.12" width="0.1524" layer="91"/>
 <label x="40.64" y="-71.12" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="LCD_D0" class="0">
-<segment>
-<pinref part="LCD1" gate="G$1" pin="D0"/>
-<wire x1="-104.14" y1="-167.64" x2="-93.98" y2="-167.64" width="0.1524" layer="91"/>
-<label x="-99.06" y="-167.64" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U1" gate="A" pin="PD0"/>
-<wire x1="38.1" y1="-81.28" x2="45.72" y2="-81.28" width="0.1524" layer="91"/>
-<label x="40.64" y="-81.28" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="LCD_D1" class="0">
-<segment>
-<pinref part="LCD1" gate="G$1" pin="D1"/>
-<wire x1="-104.14" y1="-170.18" x2="-93.98" y2="-170.18" width="0.1524" layer="91"/>
-<label x="-99.06" y="-170.18" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U1" gate="A" pin="PD1"/>
-<wire x1="38.1" y1="-83.82" x2="45.72" y2="-83.82" width="0.1524" layer="91"/>
-<label x="40.64" y="-83.82" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="LCD_D2" class="0">
-<segment>
-<pinref part="LCD1" gate="G$1" pin="D2"/>
-<wire x1="-104.14" y1="-172.72" x2="-93.98" y2="-172.72" width="0.1524" layer="91"/>
-<label x="-99.06" y="-172.72" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U1" gate="A" pin="PD2"/>
-<wire x1="38.1" y1="-86.36" x2="45.72" y2="-86.36" width="0.1524" layer="91"/>
-<label x="40.64" y="-86.36" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="LCD_D3" class="0">
-<segment>
-<pinref part="LCD1" gate="G$1" pin="D3"/>
-<wire x1="-104.14" y1="-175.26" x2="-93.98" y2="-175.26" width="0.1524" layer="91"/>
-<label x="-99.06" y="-175.26" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U1" gate="A" pin="PD3"/>
-<wire x1="38.1" y1="-88.9" x2="45.72" y2="-88.9" width="0.1524" layer="91"/>
-<label x="40.64" y="-88.9" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="LCD_ANODE" class="0">
@@ -9258,6 +9213,54 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="137.16" y1="27.94" x2="137.16" y2="30.48" width="0.1524" layer="91"/>
 <wire x1="137.16" y1="27.94" x2="134.62" y2="27.94" width="0.1524" layer="91"/>
 <junction x="137.16" y="27.94"/>
+</segment>
+</net>
+<net name="LCD_D4" class="0">
+<segment>
+<pinref part="U1" gate="A" pin="PD0"/>
+<wire x1="38.1" y1="-81.28" x2="45.72" y2="-81.28" width="0.1524" layer="91"/>
+<label x="40.64" y="-81.28" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D4"/>
+<wire x1="-104.14" y1="-177.8" x2="-93.98" y2="-177.8" width="0.1524" layer="91"/>
+<label x="-99.06" y="-177.8" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LCD_D5" class="0">
+<segment>
+<pinref part="U1" gate="A" pin="PD1"/>
+<wire x1="38.1" y1="-83.82" x2="45.72" y2="-83.82" width="0.1524" layer="91"/>
+<label x="40.64" y="-83.82" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D5"/>
+<wire x1="-93.98" y1="-180.34" x2="-104.14" y2="-180.34" width="0.1524" layer="91"/>
+<label x="-99.06" y="-180.34" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LCD_D6" class="0">
+<segment>
+<pinref part="U1" gate="A" pin="PD2"/>
+<wire x1="38.1" y1="-86.36" x2="45.72" y2="-86.36" width="0.1524" layer="91"/>
+<label x="40.64" y="-86.36" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D6"/>
+<wire x1="-104.14" y1="-182.88" x2="-93.98" y2="-182.88" width="0.1524" layer="91"/>
+<label x="-99.06" y="-182.88" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LCD_D7" class="0">
+<segment>
+<pinref part="U1" gate="A" pin="PD3"/>
+<wire x1="38.1" y1="-88.9" x2="45.72" y2="-88.9" width="0.1524" layer="91"/>
+<label x="40.64" y="-88.9" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LCD1" gate="G$1" pin="D7"/>
+<wire x1="-93.98" y1="-185.42" x2="-104.14" y2="-185.42" width="0.1524" layer="91"/>
+<label x="-99.06" y="-185.42" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
