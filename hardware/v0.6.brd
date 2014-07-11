@@ -1169,7 +1169,7 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="SUPPLIER" value="Atmel" x="49.53" y="19.685" size="1.778" layer="27" display="off"/>
 <attribute name="OC_FARNELL" value="1636932" x="49.53" y="19.685" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="53.2511" y="15.2019" size="0.6096" layer="25" ratio="10" rot="SR0"/>
-<attribute name="VALUE" x="45.7835" y="25.7429" size="0.6096" layer="27" ratio="7" rot="SR0"/>
+<attribute name="VALUE" x="45.7835" y="25.7429" size="0.6096" layer="25" ratio="7" rot="SR0"/>
 </element>
 <element name="ISP" library="SparkFun-Connectors" package="2X3_LOCK" value="AVR_SPI_PRG_62X3_LOCK" x="8.89" y="8.255" smashed="yes">
 <attribute name="NAME" x="7.134225" y="7.9375" size="1.4224" layer="25" ratio="10" rot="R90"/>
@@ -1214,9 +1214,9 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="NAME" x="17.345025" y="30.578425" size="0.4064" layer="25"/>
 <attribute name="VALUE" x="16.7386" y="26.6065" size="0.4064" layer="27" font="vector"/>
 </element>
-<element name="C3" library="SparkFun-Passives" package="0603-CAP" value="0.01uF" x="18.7325" y="19.685" smashed="yes" rot="R180">
-<attribute name="NAME" x="18.6817" y="21.1455" size="0.4064" layer="25" rot="R180"/>
-<attribute name="VALUE" x="19.7485" y="18.923" size="0.4064" layer="27" font="vector" rot="R180"/>
+<element name="C3" library="SparkFun-Passives" package="0603-CAP" value="0.01uF" x="18.761075" y="19.5199" smashed="yes">
+<attribute name="NAME" x="18.811875" y="18.0594" size="0.4064" layer="25"/>
+<attribute name="VALUE" x="17.745075" y="20.2819" size="0.4064" layer="27" font="vector"/>
 </element>
 <element name="R7" library="SparkFun-Passives" package="0603-RES" value="50" x="20.6375" y="16.8275" smashed="yes" rot="R90">
 <attribute name="NAME" x="19.177" y="17.399" size="0.4064" layer="25" rot="R270"/>
@@ -1296,15 +1296,9 @@ Please make sure your boards conform to these design rules.</description>
 <contactref element="J2" pad="12"/>
 <contactref element="J2" pad="10"/>
 <contactref element="C2" pad="1"/>
-<contactref element="C3" pad="1"/>
-<contactref element="R7" pad="2"/>
-<contactref element="R8" pad="2"/>
 <contactref element="J2" pad="M1"/>
 <contactref element="J2" pad="M2"/>
 <contactref element="R9" pad="A"/>
-<wire x1="19.5825" y1="19.685" x2="19.685" y2="19.685" width="0.2032" layer="1"/>
-<wire x1="19.685" y1="19.685" x2="20.6375" y2="18.7325" width="0.2032" layer="1"/>
-<wire x1="20.6375" y1="18.7325" x2="20.6375" y2="17.6775" width="0.2032" layer="1"/>
 <wire x1="18.0975" y1="35.052" x2="20.3835" y2="35.052" width="0.3048" layer="1"/>
 <wire x1="20.3835" y1="35.052" x2="20.6375" y2="34.798" width="0.3048" layer="1"/>
 <wire x1="20.6375" y1="34.798" x2="22.9235" y2="34.798" width="0.3048" layer="1"/>
@@ -1335,6 +1329,7 @@ Please make sure your boards conform to these design rules.</description>
 <contactref element="C7" pad="2"/>
 <contactref element="Y1" pad="2"/>
 <contactref element="Y1" pad="4"/>
+<contactref element="C3" pad="1"/>
 </signal>
 <signal name="+5V">
 <contactref element="LCD1" pad="2"/>
@@ -1846,11 +1841,6 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="25.9842" y1="22.247225" x2="25.9842" y2="22.4028" width="0.1524" layer="16"/>
 <wire x1="25.981025" y1="22.2504" x2="25.9842" y2="22.247225" width="0.1524" layer="16"/>
 </signal>
-<signal name="N$5">
-<contactref element="C3" pad="2"/>
-<contactref element="J2" pad="6"/>
-<wire x1="14.905" y1="19.685" x2="17.8825" y2="19.685" width="0.2032" layer="1"/>
-</signal>
 <signal name="PHY_RD_P">
 <contactref element="R5" pad="1"/>
 <contactref element="J2" pad="1"/>
@@ -2038,6 +2028,23 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="32.2819" y1="13.535025" x2="31.909775" y2="13.1629" width="0.3048" layer="1"/>
 <wire x1="31.909125" y1="13.223875" x2="31.909125" y2="13.16355" width="0.3048" layer="1"/>
 <wire x1="31.909125" y1="13.16355" x2="31.909775" y2="13.1629" width="0.3048" layer="1"/>
+</signal>
+<signal name="TDCAP">
+<contactref element="R7" pad="2"/>
+<contactref element="R8" pad="2"/>
+<contactref element="C3" pad="2"/>
+<wire x1="19.611075" y1="19.5199" x2="20.3073" y2="19.5199" width="0.1524" layer="1"/>
+<wire x1="20.3073" y1="19.5199" x2="20.691475" y2="19.135725" width="0.1524" layer="1"/>
+<wire x1="20.691475" y1="19.135725" x2="20.691475" y2="17.731475" width="0.1524" layer="1"/>
+<wire x1="20.691475" y1="17.731475" x2="20.6375" y2="17.6775" width="0.1524" layer="1"/>
+<wire x1="20.57945" y1="17.73555" x2="20.6375" y2="17.6775" width="0.1524" layer="1"/>
+<wire x1="20.6375" y1="12.8025" x2="19.5571" y2="12.8025" width="0.1524" layer="1"/>
+<wire x1="19.5571" y1="12.8025" x2="19.446875" y2="12.912725" width="0.1524" layer="1"/>
+<via x="19.446875" y="12.912725" extent="1-16" drill="0.3302" diameter="0.3048" shape="octagon"/>
+<wire x1="19.446875" y1="12.912725" x2="19.446875" y2="17.579975" width="0.1524" layer="16"/>
+<via x="19.446875" y="17.579975" extent="1-16" drill="0.3302" diameter="0.3048" shape="octagon"/>
+<wire x1="19.446875" y1="17.579975" x2="20.539975" y2="17.579975" width="0.1524" layer="1"/>
+<wire x1="20.539975" y1="17.579975" x2="20.6375" y2="17.6775" width="0.1524" layer="1"/>
 </signal>
 </signals>
 <errors>
