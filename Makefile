@@ -8,8 +8,9 @@ AVRDUDE=avrdude
 MMCU=atmega168a
 DEVICE=atmega168
 F_CPU=8000000
+#F_CPU=12000000
 
-PROGFLAGS= -p$(DEVICE) -c avrisp2 -P usb -U flash:w:$(PROGRAM).hex:i -B 1
+PROGFLAGS= -p$(DEVICE) -c avrisp2 -P usb -U flash:w:$(PROGRAM).hex:i -B 1 -U lfuse:w:0xff:m -U hfuse:w:0xdf:m -U efuse:w:0xf9:m 
 
 CFLAGS=-mmcu=$(MMCU) -Wall -Os -g -std=c99 -DF_CPU=$(F_CPU) 
 

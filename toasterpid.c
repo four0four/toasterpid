@@ -163,7 +163,7 @@ void timerInit() {
   // 100 Hz interrupt
 
   TCCR1B |= (1<<WGM12); // enable CTC
-  // 1875 for 12MHz
+  //OCR1A = 1875; // 100Hz at 12MHz, /64 
   OCR1A = 1250; // 100Hz at 8MHz, /64 
   TIMSK1 |= (1<<OCIE1A); // enable timer1 triggered interrupts
   TCCR1B |= (1<<CS11) | (1<<CS10); // div by 64
