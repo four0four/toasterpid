@@ -56,13 +56,6 @@ struct sdcard {
 };
 
 /*
-** basic enable/{read,write}/disable static call
-*/
-static inline void    _sd_send(uint8_t);
-
-static inline uint8_t _sd_recv();
-
-/*
 ** Initialize sd card, filling local data structures.
 */
 uint8_t sd_init();
@@ -76,12 +69,12 @@ uint8_t sd_send_command(uint8_t, uint32_t);
 /*
 ** sd_read_block(*destBuffer, srcAddr)
 */
-void    sd_read_block(uint8_t *, uint32_t);
+uint8_t sd_read_block(uint8_t *, uint32_t);
 
 /*
 ** sd_write_block(*srcBuffer, destAddr)
 */
-void    sd_write_block(uint8_t *, uint32_t);
+uint8_t sd_write_block(uint8_t *, uint32_t);
 
 
 /*

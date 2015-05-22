@@ -7,7 +7,7 @@ static inline void _sd_send(uint8_t d){
 }
 
 static inline uint8_t _sd_recv(){
- SDWATISPI;
+ SDWAITSPI;
  return SPDR;
 }
 
@@ -23,6 +23,7 @@ uint8_t sd_init(){
   for(uint8_t i = 0; i < 10; ++i){
     SPDR = 0xFF;
     SDWAITSPI;
+  }
 
   buf = sd_send_command(CMD0, 0x00000000);
 
@@ -36,10 +37,10 @@ uint8_t sd_init(){
     if(buf != 0x01)
       return 0xFF; // ERROR
     else {         // we need to read in OCR
-      OCR =  _sd_recv() << 24;
-      OCR |= _sd_recv() << 16;
-      OCR |= _sd_recv() <<  8;
-      OCR |= _sd_recv();
+      OCR =  (uint32_t)_sd_recv() << 24;
+      OCR |= (uint32_t)_sd_recv() << 16;
+      OCR |= (uint32_t)_sd_recv() <<  8;
+      OCR |= (uint32_t)_sd_recv();
       if((OCR & 0xFFF) != 0x1AA)
         // ERROR
         return 0xFF;
@@ -90,8 +91,9 @@ uint8_t sd_send_command(uint8_t cmd, uint32_t arg){
      for(i = 0; i < 9; ++i){
       _sd_send(0xFF);
       res = _sd_recv();
-      if(res != 0xFF){
+      if(res != 0xFF)
         break;
+      else continue;
     }
   } else {
     for(i = 0; i < 9; ++i){
@@ -110,7 +112,7 @@ uint8_t sd_send_command(uint8_t cmd, uint32_t arg){
   return res;
 }
 
-void    sd_read_block(uint8_t *buffer, uint32_t addr){
+uint8_t sd_read_block(uint8_t *buffer, uint32_t addr){
   uint8_t res = 0;
   uint16_t i  = 0;
 
@@ -130,7 +132,7 @@ void    sd_read_block(uint8_t *buffer, uint32_t addr){
   // read in the sector
   for(i = 0; i < 0x200; ++i){
     _sd_send(0xFF);
-    buf[i] = _sd_recv();
+    buffer[i] = _sd_recv();
   }
 
   // clear off any remaining crap
@@ -140,18 +142,49 @@ void    sd_read_block(uint8_t *buffer, uint32_t addr){
   while(_sd_recv() != 0xFF);
 
   SDUNSELECT;
+
+  return 0;
 }
 
-void    sd_write_block(uint8_t *buffer, uint32_t addr){
+uint8_t sd_write_block(uint8_t *buffer, uint32_t addr){
+  uint8_t res = 0;
+  uint16_t i  = 0;
 
+  SDSELECT;
 
+  res = sd_send_command(CMD24, addr);
+
+  if(res != 0x00) // ERROR
+    return res;
+
+  _sd_send(0xFE);
+  _sd_recv();
+
+  for(i = 0; i < 512; ++i){
+    _sd_send(buffer[i]);
+    _sd_recv();
+  }
+
+  // CRC dummy packets
+  _sd_send(0xFF);
+  _sd_recv();
+  _sd_send(0xFF);
+  _sd_recv();
+
+  do
+    _sd_send(0xFF);
+  while(_sd_recv() != 0xFF);
+
+  SDUNSELECT;
+
+  return 0;
 }
 
+/*
 void    sd_read_multi(uint8_t *buffer, uint32_t addr, uint32_t count){
-
+  return;
 }
 
 void    sd_write_multi(uint8_t *buffer, uint32_t addr, uint32_t count){
-
-}
-
+  return;
+}*/
