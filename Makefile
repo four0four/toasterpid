@@ -7,10 +7,13 @@ SIZE=avr-size
 AVRDUDE=avrdude
 MMCU=atmega168a
 DEVICE=atmega168
+# TODO check the installed crystal
 F_CPU=8000000
 #F_CPU=12000000
 
-PROGFLAGS= -p$(DEVICE) -c avrisp2 -P usb -U flash:w:$(PROGRAM).hex:i -B 1 -U lfuse:w:0xff:m -U hfuse:w:0xdf:m -U efuse:w:0xf9:m 
+# some fuse bits read back (incorrectly) unchanged, this forces avrdude to prompt - so, skip it after initial config:
+# PROGFLAGS= -p$(DEVICE) -c avrisp2 -P usb -U flash:w:$(PROGRAM).hex:i -B1 -U lfuse:w:0xff:m -U hfuse:w:0xdf:m -U efuse:w:0xf9:m 
+PROGFLAGS= -p$(DEVICE) -c avrisp2 -P usb -U flash:w:$(PROGRAM).hex:i -B1 
 
 CFLAGS=-mmcu=$(MMCU) -Wall -Os -g -std=c99 -DF_CPU=$(F_CPU) 
 
@@ -27,8 +30,6 @@ $(PROGRAM).out: $(SOURCES)
 	$(CC) $(CFLAGS) -o $(PROGRAM).out $(SOURCES) -I$(INCLUDE)
 
 flash: $(PROGRAM).hex
-	#$(AVRDUDE) -p $(DEVICE) -c avrisp2 -P usb -B 1 parms
-	$(AVRDUDE) -p $(DEVICE) -c avrisp2 -B 1 parms
 	$(AVRDUDE) $(PROGFLAGS)
 
 clean:
