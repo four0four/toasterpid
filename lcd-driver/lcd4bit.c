@@ -4,7 +4,7 @@ void strobeEN() {
   LCD_CTL_PORT &= ~(1<<LCD_EN);
   LCD_CTL_PORT |= (1<<LCD_EN);
   // One of the following *may* be required at faster clocks:
-  //  _delay_us(1);
+  //_delay_us(1);
   //__asm__("nop");
   LCD_CTL_PORT &= ~(1<<LCD_EN);
 }

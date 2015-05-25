@@ -18,14 +18,14 @@
 // control lines
 #define LCD_CTL_PORT PORTC
 #define LCD_CTL_DDR DDRC
-#define LCD_RS 1
-#define LCD_EN 2
+#define LCD_RS 2
+#define LCD_EN 1
 #define LCD_RW 3
 
 // data lines/bus - lcd4bit.* uses the bottom 4 bits of this port
-#define LCD_DATA_PORT PORTB
-#define LCD_DATA_DDR DDRB
-#define LCD_DATA_PIN PINB
+#define LCD_DATA_PORT PORTD
+#define LCD_DATA_DDR DDRD
+#define LCD_DATA_PIN PIND
 
 #define LCD_DATA_MASK 0x0F
 
