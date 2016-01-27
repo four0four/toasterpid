@@ -13,9 +13,9 @@ int main() {
 */
   _delay_ms(150);
 
-  lcdInit();
+  lcd_init();
 
-  lcdWriteString("Hello, world!\n");
+  lcd_write_str("Hello, world!\n");
   
   return 0;
 }

@@ -55,39 +55,30 @@
 #define FUNCTION_DISPLAY_LINES 0x08 // set to indicate 2 lines, unset for 1
 #define FUNCTION_FONT 0x04 // set to indicate 5*10 font, unset for 5*8
 
-// pulls EN high 10 us, LCD should read off the bus during this period
-void strobeEN();
-
 // runs basic initialization commands - does not require an lcd power cycle
-void lcdInit();
-
-// really minimal function - not really restricted to a nibble
-void lcdWriteNibble(uint8_t);
+void lcd_init();
 
 // writes 8 bits of data to the LCD 
-// pass RS_CMD or RS_DATA as appropriate
-void lcdWrite(uint8_t, uint8_t);
+// first argument recieves RS_CMD or RS_DATA as appropriate
+void lcd_write_byte(uint8_t RS, uint8_t data);
 
 // returns 8 bits of data from the current address
-// pass RS_CMD for RS_DATA to select the buffer referenced
-uint8_t lcdRead(uint8_t);
+// first argument recieves RS_CMD to select buffer referenced
+uint8_t lcd_read_byte(uint8_t RS);
 
-// blocks while the busy bit is set in the LCD's status register
-void lcdWait(); 
-
-// write a char to the display at the current address (basically just asserts RS_DATA)
-void lcdWriteChar(char);
+// write a char to the display at the current address (basically just asserts RS_DATA and writes)
+void lcd_write_char(char data);
 
 // write a string to the display, starting at the current address
-// does not currently wrap nicely!
-void lcdWriteString(char*);
+// does not wrap nicely!
+void lcd_write_str(char *data);
 
 // Much more useful functions for menu driven UI
 // line: 0 or 1
 // pos: 0-15
 // data: null-terminated string to be written
 // - any length > 16 will be heartlessly truncated
-void lcdWriteLine(uint8_t, uint8_t, char*);
+void lcd_write_line(uint8_t line, uint8_t pos, char *data);
 
 
 #endif // __LCD_H
