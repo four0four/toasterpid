@@ -6,6 +6,7 @@
 #include "serial.h"
 #include "temp.h"
 #include "lcd4bit.h"
+#include "sdcard.h"
 
 // 10Hz flag for LCD/thermo/PID
 #define _10HZ 0x80
@@ -92,31 +93,61 @@ profile curProfile;
 int main() {
   // for debug info via sprintf
   char str[20];
+  uint8_t res = 0;
+  uint8_t block[512] = {0};
   // last thermo read
   uint32_t lastRead = 0;
+
   // cludgy startup delay for external hw
   _delay_ms(100);  
   // temp. heartbeat
   DDRD |= (1<<6);
+  PORTD &= ~(1<<6);
+
+  // disable the phy for now
+  DDRD |= (1<<4);
+  PORTD |= (1<<4);
 
   // init hardware
-  serialInit();
-  initThermo();
+  //serialInit();
+  //initThermo();
   lcdInit(); 
   timerInit();
-   
-  serialString("initialization completed.\n\r");
-  serialString("[time], [temp], [target], [pidval]\n\r");
+
+  res = sd_init();
+
+  //sprintf(str,"res: 0x%x\n", res);
+  //lcdWriteString(str);
+
+  lcdWriteString("1");
+  res = sd_read_block(block, 0);
+  lcdWriteString("2");
+  if (res){
+    sprintf(str,"ERROR: 0x%x\n", res);
+    lcdWriteString(str);
+  }
+  else {
+    for(int i = 40; i < 50; ++i){
+      sprintf(str, "%x", block[i]);
+      lcdWriteString(str);
+    }
+    lcdWriteString("\nDONE");
+  }
+
+  while(1);
+  //serialString("initialization completed.\n\r");
+  //serialString("[time], [temp], [target], [pidval]\n\r");
 
   lcdWrite(RS_CMD, LCD_CLR);
   lastRead = readTemp();
 
-  lcdWriteLine(0, 2, "Thermocouple");
-  loadProfile();
+//  lcdWriteLine(0, 2, "Thermocouple");
+ // loadProfile();
 
   // good to go:
   sei();
   curState = REFLOWING;
+
 
   while(1) {
     if(flags & _10HZ){

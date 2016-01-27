@@ -52,7 +52,12 @@ struct sdcard {
   uint8_t type;
   uint8_t status;
   uint16_t blocksize;
-  
+  resp *r;
+};
+
+struct resp {
+  uint8_t resp;
+  uint32_t data;
 };
 
 /*
@@ -62,9 +67,10 @@ uint8_t sd_init();
 
 /*
 ** Send a single sd/mmc command, arguments supplied if applicable.
-** sd_send_command(command, argument)
+** responses recorded as appropriate in r
+** sd_command(resp_struct, command, args);
 */
-uint8_t sd_send_command(uint8_t, uint32_t);
+void sd_command(resp *r, uint8_t cmd, uint32_t arg);
 
 /*
 ** sd_read_block(*destBuffer, srcAddr)
