@@ -6,7 +6,7 @@
 #include "serial.h"
 #include "temp.h"
 #include "lcd4bit.h"
-#include "sdcard.h"
+//#include "sdcard.h"
 
 // 10Hz flag for LCD/thermo/PID
 #define _10HZ 0x80
@@ -34,18 +34,18 @@
 
 // debug options
 //#define _REALTIME
-#define _CSV
+//#define _CSV
 
 // set up timer interrupt hw
-void timerInit();
+void timer_init();
 // load (currently the only) profile from EEPROM to RAM globals
-uint8_t loadProfile();
+uint8_t load_profile();
 // save (currently the only) profile to EEPROM
-void saveProfile();
+void save_profile();
 // Interpolate stored profile values
-void updateTarget();
+void update_target();
 // return 0-255 from PID algo
-uint8_t getPID(int16_t in);
+uint8_t get_pid(int16_t in);
 
 // count to match ssr output to pid calculation
 volatile uint8_t ssrCnt = 0;
@@ -110,39 +110,41 @@ int main() {
 
   // init hardware
   //serialInit();
-  //initThermo();
-  lcdInit(); 
-  timerInit();
+  initThermo();
+  lcd_init();
+  timer_init();
 
-  res = sd_init();
+  //res = sd_init();
 
   //sprintf(str,"res: 0x%x\n", res);
-  //lcdWriteString(str);
+  //lcd_write_byte_str(str);
 
-  lcdWriteString("1");
+  /*
+  lcd_write_char('1');
   res = sd_read_block(block, 0);
-  lcdWriteString("2");
+  lcd_write_char('2');
   if (res){
     sprintf(str,"ERROR: 0x%x\n", res);
-    lcdWriteString(str);
+    lcd_write_str(str);
   }
   else {
     for(int i = 40; i < 50; ++i){
       sprintf(str, "%x", block[i]);
-      lcdWriteString(str);
+      lcd_write_str(str);
     }
-    lcdWriteString("\nDONE");
+    lcd_write_str("\nDONE");
   }
+  */
 
-  while(1);
   //serialString("initialization completed.\n\r");
   //serialString("[time], [temp], [target], [pidval]\n\r");
 
-  lcdWrite(RS_CMD, LCD_CLR);
+  lcd_write_byte(RS_CMD, LCD_CLR);
   lastRead = readTemp();
 
-//  lcdWriteLine(0, 2, "Thermocouple");
- // loadProfile();
+  lcd_write_line(0, 2, "Thermocouple");
+
+  load_profile();
 
   // good to go:
   sei();
@@ -154,24 +156,24 @@ int main() {
       flags &= ~_10HZ;
       lastRead = readTemp();
       curTemp = getExternalTemp(lastRead);
-      updateTarget();
-      curPID = getPID(curTemp);
+      update_target();
+      curPID = get_pid(curTemp);
       sprintf(str, "      %d%cC", curTemp,0xDF);
       if(getFaults(lastRead) == THERM_SCV_FAULT)
-        lcdWriteLine(1, 0, "Short to VCC (4)");
+        lcd_write_line(1, 0, "Short to VCC (4)");
       else if(getFaults(lastRead) == THERM_SCG_FAULT)
-        lcdWriteLine(1, 0, "Short to GND (2)");
+        lcd_write_line(1, 0, "Short to GND (2)");
       else if(getFaults(lastRead) == THERM_OC_FAULT)
-        lcdWriteLine(1, 0, "Open probe (1)");
+        lcd_write_line(1, 0, "Open probe (1)");
       else
-        lcdWriteLine(1, 0, str);
+        lcd_write_line(1, 0, str);
     }
     if(flags & _2HZ){
       flags &= ~_2HZ;
       if((curState == COOLING) && (curTemp <= _DONE_TEMP)){
         curState = IDLE;
-        lcdWrite(RS_CMD, LCD_CLR); // clear display/buffer
-        lcdWriteLine(0, 6, "Done");
+        lcd_write_byte(RS_CMD, LCD_CLR); // clear display/buffer
+        lcd_write_line(0, 6, "Done");
         cli();
       }
 #ifdef _REALTIME
@@ -189,7 +191,7 @@ int main() {
   }
 }
 
-void timerInit() {
+void timer_init() {
   // No, this is not actually pwm. Handling a zero crossing SSR is possible in hardware, but ugly and (in my opinion) less effective.
   // 100 Hz interrupt
 
@@ -200,14 +202,14 @@ void timerInit() {
   TCCR1B |= (1<<CS11) | (1<<CS10); // div by 64
 }
 
-void updateTarget() {
+void update_target() {
   
   if(curTime > curProfile.stepTime[curStep]){
     ++curStep;
     if(curStep >= curProfile.numSteps){
       curState = COOLING;
-      lcdWrite(RS_CMD, LCD_CLR); // clear display/buffer
-      lcdWriteLine(0, 4, "Cooling:");
+      lcd_write_byte(RS_CMD, LCD_CLR); // clear display/buffer
+      lcd_write_line(0, 4, "Cooling:");
       // This will just force the elements off, fine for now
       curTarget = 25 * 512;
       return;
@@ -218,7 +220,7 @@ void updateTarget() {
     curTarget += curProfile.stepRate[curStep];
 }
 
-uint8_t loadProfile() {
+uint8_t load_profile() {
   // currently a single profile - Hardcoded crap
   // really could just use a single byte per temp step, max is *usually* < 255
   // TODO - Expand to multiple profiles
@@ -244,12 +246,12 @@ uint8_t loadProfile() {
   return 0;
 }
 
-void saveProfile() {
+void save_profile() {
   // TODO write profile struct into EEPROM
   // TODO add serial interface for profile creation
 }
 
-uint8_t getPID(int16_t in) {
+uint8_t get_pid(int16_t in) {
   int16_t error = ((curTarget>>9) - curTemp);
   int32_t pterm = PGAIN * error;
   int32_t iterm = 0;

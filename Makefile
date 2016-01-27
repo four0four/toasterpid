@@ -1,6 +1,6 @@
 PROGRAM=toasterpid
-SOURCES=toasterpid.c serial-driver/serial.c lcd-driver/lcd4bit.c thermo-driver/temp.c sd-driver/sdcard.c
-INCLUDE=serial-driver/ -Ilcd-driver/ -Ithermo-driver/ -Isd-driver/
+SOURCES=toasterpid.c serial-driver/serial.c lcd-driver/lcd4bit.c thermo-driver/temp.c #sd-driver/sdcard.c
+INCLUDE=serial-driver/ -Ilcd-driver/ -Ithermo-driver/# -Isd-driver/
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 SIZE=avr-size
