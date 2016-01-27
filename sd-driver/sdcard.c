@@ -39,7 +39,7 @@ uint8_t sd_init(sdcard *s){
 
   buf = sd_command(s->r, CMD8, 0x000001AA);
 //  sprintf(str,"buf: 0x%x\n", buf);
-//  lcdWriteString(str);
+//  lcd_write_str(str);
 
   if(buf != 0x05) { // 0x05 -> illegal command, therefore we're a SDv1/MMC card
     // IS SDv1/MMC card
@@ -50,7 +50,7 @@ uint8_t sd_init(sdcard *s){
     else {         // check ocr 
 
       sprintf(str,"ocr: %08lx", s->r->data);
-      lcdWriteString(str);
+      lcd_write_str(str);
 
       while(1);
 
@@ -60,12 +60,12 @@ uint8_t sd_init(sdcard *s){
     }
   }
 
-//  lcdWriteString("asdf");
+//  lcd_write_str("asdf");
   // wait for the card to complete internal initialization
   // TODO - tweak timeout value
   while(sd_command(s->r,CMD1, 0x00) != 0x00){
     if(++timeout > 1000){
-      lcdWriteString("TIMEOUT");
+      lcd_write_str("TIMEOUT");
       while(1);
       // ERROR
       return 0xFF;
@@ -73,7 +73,7 @@ uint8_t sd_init(sdcard *s){
   }
 
   // attempt to (initially) set sector size to 512B
-  buf = sd_send_command(CMD16, 0x200);
+  buf = sd_command(CMD16, 0x200);
   if(buf != 0x00)  // ERROR in buf
     return buf;
 
@@ -141,7 +141,7 @@ uint8_t sd_read_block(uint8_t *buffer, uint32_t addr){
 
   SDSELECT;
 
-  res = sd_send_command(CMD17, addr);
+  res = sd_command(CMD17, addr);
   if(res != 0x00) // ERROR
     return res;
 
@@ -169,7 +169,7 @@ uint8_t sd_write_block(uint8_t *buffer, uint32_t addr){
 
   SDSELECT;
 
-  res = sd_send_command(CMD24, addr);
+  res = sd_command(CMD24, addr);
 
   if(res != 0x00) // ERROR
     return res;

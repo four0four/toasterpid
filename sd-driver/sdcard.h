@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <stdint.h> 
+#include <stdio.h>
 
 
 // MMC command defines
@@ -48,17 +49,18 @@
 
 // TODO - align this
 // TODO - also use this after prototyping
-struct sdcard {
+
+struct resp_s {
+  uint8_t resp;
+  uint32_t data;
+} typedef resp;
+ 
+struct sdcard_s {
   uint8_t type;
   uint8_t status;
   uint16_t blocksize;
   resp *r;
-};
-
-struct resp {
-  uint8_t resp;
-  uint32_t data;
-};
+} typedef sdcard;
 
 /*
 ** Initialize sd card, filling local data structures.
@@ -70,7 +72,7 @@ uint8_t sd_init();
 ** responses recorded as appropriate in r
 ** sd_command(resp_struct, command, args);
 */
-void sd_command(resp *r, uint8_t cmd, uint32_t arg);
+uint8_t sd_command(resp *r, uint8_t cmd, uint32_t arg);
 
 /*
 ** sd_read_block(*destBuffer, srcAddr)
